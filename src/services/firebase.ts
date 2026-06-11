@@ -1,19 +1,24 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { auth, db, storage } from '../../firebase.config';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import {
+  collection, addDoc, query, where, orderBy,
+  onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp,
+} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDw7iRCgzu_5XgE4TT2nKzYLgTka4tXpfM",
-  authDomain: "conferencia-compras.firebaseapp.com",
-  projectId: "conferencia-compras",
-  storageBucket: "conferencia-compras.firebasestorage.app",
-  messagingSenderId: "832755308399",
-  appId: "1:832755308399:web:c4ae912eff8e4cc297ba9a",
-};
+export { auth, onAuthStateChanged };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+export const signIn = (email: string, password: string) =>
+  signInWithEmailAndPassword(auth, email, password);
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+export const signUp = (email: string, password: string) =>
+  createUserWithEmailAndPassword(auth, email, password);
+
+export const signOut = () => firebaseSignOut(auth);
+
+export const getCurrentUser = () => auth.currentUser;
