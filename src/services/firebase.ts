@@ -10,8 +10,11 @@ import {
   onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ShoppingItem } from '../types';
 
 export { auth, onAuthStateChanged };
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
 
 export const signIn = (email: string, password: string) =>
   signInWithEmailAndPassword(auth, email, password);
@@ -22,3 +25,49 @@ export const signUp = (email: string, password: string) =>
 export const signOut = () => firebaseSignOut(auth);
 
 export const getCurrentUser = () => auth.currentUser;
+
+// ─── Storage ──────────────────────────────────────────────────────────────────
+
+export const uploadImage = async (localUri: string, userId: string): Promise<string> => {
+  const filename = `products/${userId}/${Date.now()}.jpg`;
+  const storageRef = ref(storage, filename);
+  const response = await fetch(localUri);
+  const blob = await response.blob();
+  await uploadBytes(storageRef, blob);
+  return getDownloadURL(storageRef);
+};
+
+// ─── Firestore ────────────────────────────────────────────────────────────────
+
+const COL = 'shoppingItems';
+
+export const addShoppingItem = async (item: Omit<ShoppingItem, 'id' | 'createdAt'>) => {
+  const docRef = await addDoc(collection(db, COL), {
+    ...item,
+    createdAt: serverTimestamp(),
+  });
+  return docRef.id;
+};
+
+export const getUserItems = (userId: string, callback: (items: ShoppingItem[]) => void) => {
+  const q = query(
+    collection(db, COL),
+    where('userId', '==', userId),
+    orderBy('createdAt', 'desc')
+  );
+  return onSnapshot(q, (snapshot) => {
+    const items: ShoppingItem[] = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...(d.data() as Omit<ShoppingItem, 'id'>),
+    }));
+    callback(items);
+  });
+};
+
+export const updateItemQuantity = async (itemId: string, quantity: number, unitPrice: number) => {
+  await updateDoc(doc(db, COL, itemId), { quantity, totalPrice: quantity * unitPrice });
+};
+
+export const deleteShoppingItem = async (itemId: string) => {
+  await deleteDoc(doc(db, COL, itemId));
+};

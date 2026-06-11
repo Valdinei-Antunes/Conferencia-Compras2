@@ -24,11 +24,12 @@ export default function RegisterScreen({ navigation }: Props) {
     try {
       await signUp(email.trim(), password);
     } catch (error: any) {
-      const msg =
-        error.code === 'auth/email-already-in-use' ? 'E-mail já cadastrado.' :
-        'Erro ao criar conta.';
-      Alert.alert('Erro', msg);
-    } finally {
+  console.log('ERRO CADASTRO:', JSON.stringify(error), error.code, error.message);
+  const msg =
+    error.code === 'auth/email-already-in-use' ? 'E-mail já cadastrado.' :
+    'Erro ao criar conta.';
+  Alert.alert('Erro', msg);
+} finally {
       setLoading(false);
     }
   };
