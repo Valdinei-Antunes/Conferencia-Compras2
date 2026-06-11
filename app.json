@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Conferência de Compras",
+    "slug": "conferencia-compras",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.conferenciacompras",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Usado para fotografar produtos na gôndola.",
+        "NSPhotoLibraryUsageDescription": "Usado para acessar imagens da galeria."
+      }
+    },
+    "android": {
+      "package": "com.conferenciacompras",
+      "permissions": ["android.permission.CAMERA"]
+    }
+  }
+}
