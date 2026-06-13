@@ -14,7 +14,6 @@ import { ShoppingItem } from '../types';
 
 export { auth, onAuthStateChanged };
 
-// ─── Auth ─────────────────────────────────────────────────────────────────────
 
 export const signIn = (email: string, password: string) =>
   signInWithEmailAndPassword(auth, email, password);
@@ -26,7 +25,6 @@ export const signOut = () => firebaseSignOut(auth);
 
 export const getCurrentUser = () => auth.currentUser;
 
-// ─── Storage ──────────────────────────────────────────────────────────────────
 
 export const uploadImage = async (localUri: string, userId: string): Promise<string> => {
   const filename = `products/${userId}/${Date.now()}.jpg`;
@@ -37,7 +35,6 @@ export const uploadImage = async (localUri: string, userId: string): Promise<str
   return getDownloadURL(storageRef);
 };
 
-// ─── Firestore ────────────────────────────────────────────────────────────────
 
 const COL = 'shoppingItems';
 

@@ -42,7 +42,7 @@ export default function CameraScreen({ navigation, route }: Props) {
       const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
       if (!photo?.uri) throw new Error('Falha');
 
-      // Redimensiona para 800px e comprime para 60%
+
       const manipulated = await ImageManipulator.manipulateAsync(
         photo.uri,
         [{ resize: { width: 800 } }],
@@ -52,7 +52,7 @@ export default function CameraScreen({ navigation, route }: Props) {
       route.params.onCapture(manipulated.uri);
       navigation.goBack();
     } catch {
-      // silently fail
+     
     } finally {
       setLoading(false);
     }
