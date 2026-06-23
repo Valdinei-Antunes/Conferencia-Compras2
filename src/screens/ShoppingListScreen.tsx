@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, ShoppingItem } from '../types';
-import { getUserItems, updateItemQuantity, deleteShoppingItem, signOut, getCurrentUser } from '../services/firebase';
+import { getUserItems, updateItemQuantity, deleteShoppingItem, clearUserList, signOut, getCurrentUser } from '../services/firebase';
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'ShoppingList'> };
 
@@ -47,6 +47,22 @@ export default function ShoppingListScreen({ navigation }: Props) {
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Sair', style: 'destructive', onPress: () => signOut() },
     ]);
+  };
+
+  const handleClearList = () => {
+    if (!user || items.length === 0) return;
+    Alert.alert(
+      'Excluir lista',
+      `Tem certeza que deseja remover todos os ${items.length} produto(s)?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir tudo',
+          style: 'destructive',
+          onPress: () => clearUserList(user.uid),
+        },
+      ]
+    );
   };
 
   const renderItem = ({ item }: { item: ShoppingItem }) => {
@@ -96,9 +112,16 @@ export default function ShoppingListScreen({ navigation }: Props) {
           <Text style={styles.headerTitle}>🛒 Minha Lista</Text>
           <Text style={styles.headerSub}>{items.length} produto(s)</Text>
         </View>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-          <Text style={styles.logoutTxt}>Sair</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {items.length > 0 && (
+            <TouchableOpacity onPress={handleClearList} style={styles.logoutBtn}>
+              <Text style={styles.clearBtnTxt}>🗑️ Limpar</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
+            <Text style={styles.logoutTxt}>Sair</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {items.length > 0 && (
@@ -141,6 +164,8 @@ const styles = StyleSheet.create({
   headerSub: { fontSize: 12, color: '#9fa8da', marginTop: 2 },
   logoutBtn: { backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 7 },
   logoutTxt: { color: '#fff', fontWeight: '600', fontSize: 13 },
+  clearBtn: { backgroundColor: 'rgba(229,57,53,0.2)', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 7 },
+  clearBtnTxt: { color: '#ff8a80', fontWeight: '600', fontSize: 13 },
   totalBanner: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#1b5e20', paddingHorizontal: 20, paddingVertical: 14 },
   totalBannerLbl: { fontSize: 13, color: '#a5d6a7', fontWeight: '600' },
   totalBannerSub: { fontSize: 11, color: '#81c784' },

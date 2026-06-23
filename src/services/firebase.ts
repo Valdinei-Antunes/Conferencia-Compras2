@@ -5,12 +5,13 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
 } from 'firebase/auth';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ShoppingItem } from '../types';
 import {
   collection, addDoc, query, where, orderBy,
   onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp,
+  writeBatch, getDocs,   // ← adicione writeBatch e getDocs
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { ShoppingItem } from '../types';
 
 export { auth, onAuthStateChanged };
 
@@ -67,4 +68,12 @@ export const updateItemQuantity = async (itemId: string, quantity: number, unitP
 
 export const deleteShoppingItem = async (itemId: string) => {
   await deleteDoc(doc(db, COL, itemId));
+};
+
+export const clearUserList = async (userId: string) => {
+  const q = query(collection(db, COL), where('userId', '==', userId));
+  const snapshot = await getDocs(q);
+  const batch = writeBatch(db);
+  snapshot.docs.forEach((d) => batch.delete(d.ref));
+  await batch.commit();
 };
